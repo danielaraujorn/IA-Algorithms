@@ -9,6 +9,8 @@ nIndividual = 10;
 iVector = [];
 nGeneration = 10;
 let i1, i2; //individuals for crossover
+const i1Mask =  0xf0; //0b11110000
+const i2Mask = 0x0f; //0b00001111
 
 class Individual{
 	constructor(genCode){
@@ -38,7 +40,7 @@ updateProportions = (v) => {
 	
 	v[0].relativeBoundaries.min = 0;
 	v[0].relativeBoundaries.max = v[i].relativeFitness;
-	for(i = 1; i < nIndividual; i++){
+	for(let i = 1; i < nIndividual; i++){
 		v[i].relativeBoundaries.min = v[i-1].relativeBoundaries.max;
 		v[i].relativeBoundaries.max = v[i].relativeBoundaries.min + v[i.relativeFitness]; 
 	}
@@ -53,10 +55,9 @@ getIndividual = (key, v) => {
 }
 
 crossover = (i1, i2) => {
+	//aqui está modificando as variaveis locais ou globais?
 	let i1Aux = i1.code;
 	let i2Aux = i2.code;
-	const i1Mask =  0xf0; //0b11110000
-	const i2Mask = 0x0f; //0b00001111
 	i1.code &= (i1Mask); //mask to preserve the lasts 4 bits
 	i1.code |= (i2.code & i2Mask); //preserve the firsts 4 bits in i2 and add to i1 code
 	i2.code &= (i2Mask);
@@ -71,19 +72,19 @@ hasMutation = (v) => {
 	});
 } 
 //Create all Individuals
-for(i = 0; i < nIndividual; i++){
-	iVector[i] = new Individual(round(Math.random()*255));
+for(let i = 0; i < nIndividual; i++){
+	iVector[i] = new Individual(Math.round(Math.random()*255));
 }
 
 //Algorithm
-for(generation = 0; generation < nGeneration; generation++){
+for(let generation = 0; generation < nGeneration; generation++){
 	iVector[i].fitness = fitness(iVector[i].genCode);
 	iVector[i].mutation = Math.random()*100;
 }
 
 updateProportions(iVector);
 
-for(i = 0; i < nIndividual/2; i++){
+for(let i = 0; i < nIndividual/2; i++){
 	i1 = getIndividual(Math.random()*100, iVector);
 	i2 = getIndividual(Math.random()*100, iVector);
 	crossover(i1,i2);
